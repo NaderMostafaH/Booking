@@ -33,19 +33,19 @@ namespace Booking.DataAccess.Repository
                 {
                     objFromDb.TripId = reservation.TripId;
                 }
-                if (reservation.Trip != null)
-                {
-                    objFromDb.TripId = reservation.Trip.Id;
-                }
+                //if (reservation.Trip != null)
+                //{
+                //    objFromDb.TripId = reservation.Trip.Id;
+                //}
                 
                 if (reservation.UserId != 0)
                 {
                     objFromDb.UserId = reservation.UserId;
                 }
-                if (reservation.User != null)
-                {
-                    objFromDb.UserId = reservation.User.Id;
-                }
+                //if (reservation.User != null)
+                //{
+                //    objFromDb.UserId = reservation.User.Id;
+                //}
                
             }
             

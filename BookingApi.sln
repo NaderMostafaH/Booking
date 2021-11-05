@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booking.DataAccess", "Booki
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booking.Models", "Booking.Models\Booking.Models.csproj", "{C5547E91-F589-49DE-A1EF-19A0A94CBCF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingMVC", "BookingMVC\BookingMVC.csproj", "{082F60DF-5069-4C26-B9C8-C89CF65383F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingMVC", "BookingMVC\BookingMVC.csproj", "{082F60DF-5069-4C26-B9C8-C89CF65383F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

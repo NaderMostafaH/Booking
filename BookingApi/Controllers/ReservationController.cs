@@ -1,8 +1,14 @@
-﻿using Booking.DataAccess.Repository.IRepository;
+﻿using AutoMapper;
+using Booking.DataAccess.Data;
+using Booking.DataAccess.Repository.IRepository;
 using Booking.Models;
+using Booking.Models.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookingApi.Controllers
@@ -13,16 +19,28 @@ namespace BookingApi.Controllers
     public class ReservationController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ReservationController(IUnitOfWork unitOfWork)
+
+        private readonly IMapper _mapper;
+
+        public ReservationController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
+         
+
         }
         [HttpGet]
+        [Route("/GetReservationsList")]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                return Ok(await _unitOfWork.Reservation.GetAllAsync(includeProperties:"Trip,User"));
+                var ReservationListFromDb = await _unitOfWork.Reservation.GetAllAsync(includeProperties: "User,Trip");
+               
+                // Mapping Reservation List To Response ReservationListDto
+                var reservationListDto = _mapper.Map<List<ReservationListDto>>(ReservationListFromDb);
+       
+                return Ok(reservationListDto);
             }
             catch (Exception)
             {
@@ -31,17 +49,46 @@ namespace BookingApi.Controllers
             }
             
         }
-        [HttpGet("id:int")]
+        [HttpGet()]
+        [Route("/GetReservationData/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
-                var reservationFromDb = await _unitOfWork.Reservation.GetFirstOrDefaultAsync(i => i.Id == id , includeProperties: "User,Trip");
+                var reservationFromDb = await _unitOfWork.Reservation.GetFirstOrDefaultAsync(i => i.Id == id, includeProperties: "User,Trip");
+         
                 if (reservationFromDb == null)
                 {
                     return NotFound();
                 }
-                return Ok(reservationFromDb);
+                //Mapping To Response Dto
+                var reservationListDto = _mapper.Map<ReservationDetailsDto>(reservationFromDb);
+                
+                return Ok(reservationListDto);
+            }
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error While retrieving data from database");
+            }
+        }
+
+        [HttpGet()]
+        [Route("/GetReservationUserData/{id:int}")]
+        public async Task<IActionResult> GetReservationUserData(int id)
+        {
+
+            try
+            {
+                var reservationFromDb = await _unitOfWork.Reservation.GetFirstOrDefaultAsync(i => i.Id == id, includeProperties: "User,Trip");
+                if (reservationFromDb == null)
+                {
+                    return NotFound();
+                }
+                //Mapping Data To Response Dto
+                var reservationRespnseDto = _mapper.Map<ReservationForUserDto>(reservationFromDb);
+                
+                return Ok(reservationRespnseDto);
             }
             catch (Exception)
             {
@@ -50,6 +97,7 @@ namespace BookingApi.Controllers
             }
         }
         [HttpPost]
+        [Route("/Create/")]
         public async Task<IActionResult> Create(Reservation reservation )
         {
             try
@@ -59,7 +107,7 @@ namespace BookingApi.Controllers
 
                  await _unitOfWork.Reservation.AddAsync(reservation);
                 _unitOfWork.Save();
-                return CreatedAtAction(nameof(Get), new { id = reservation.Id }, reservation);
+                return CreatedAtAction(nameof(GetReservationUserData), new { id = reservation.Id });
             }
             catch (Exception)
             {
@@ -67,7 +115,8 @@ namespace BookingApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Creating New Reservation");
             }
         }
-        [HttpPut("{id:int}")]
+        [HttpPut()]
+        [Route("/Update/{id:int}")]
         public async Task<IActionResult> Update(int id , Reservation reservation)
         {
             try
@@ -82,7 +131,7 @@ namespace BookingApi.Controllers
                 }
                   _unitOfWork.Reservation.update(reservation);
                 _unitOfWork.Save();
-                return CreatedAtAction(nameof(Get), new { id = reservation.Id }, reservation);
+                return CreatedAtAction(nameof(GetReservationUserData), new { id = reservation.Id }, reservation);
 
             }
             catch (Exception)
@@ -91,7 +140,8 @@ namespace BookingApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error Updating Reservation");
             }
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete()]
+        [Route("/Delete{id:int}/")]
         public async Task<IActionResult> Delete(int id)
         {
 

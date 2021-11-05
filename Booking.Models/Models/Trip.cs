@@ -17,5 +17,6 @@ namespace Booking.Models
         public string ImageUrl { get; set; }
         [AllowHtml]
         public string Content { get; set; }
+        public ICollection<Reservation> Reservations { get; set; }
     }
 }

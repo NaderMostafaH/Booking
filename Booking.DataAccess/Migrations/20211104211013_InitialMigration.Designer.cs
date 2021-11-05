@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Booking.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211031084555_addDataBaseTables")]
-    partial class addDataBaseTables
+    [Migration("20211104211013_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,7 +32,9 @@ namespace Booking.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -83,6 +85,28 @@ namespace Booking.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Trip");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CityName = "Cairo",
+                            Content = "<div><h1>This Is Trip Journy To Cairo Content</h1></div>",
+                            CreationDate = new DateTime(2021, 11, 4, 23, 10, 13, 490, DateTimeKind.Local).AddTicks(4144),
+                            ImageUrl = "/images/img1.jpg",
+                            Name = "Journy To Cairo",
+                            Price = 5000m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CityName = "Luxor",
+                            Content = "<div><h1>This Is Trip Journy To Luxor Content</h1></div>",
+                            CreationDate = new DateTime(2021, 11, 4, 23, 10, 13, 491, DateTimeKind.Local).AddTicks(1900),
+                            ImageUrl = "/images/img2.jpg",
+                            Name = "Journy To Luxor",
+                            Price = 10000m
+                        });
                 });
 
             modelBuilder.Entity("Booking.Models.User", b =>
@@ -93,7 +117,9 @@ namespace Booking.DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
@@ -101,18 +127,32 @@ namespace Booking.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "nadermostafa11@gmail.com",
+                            Password = "12345678"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "nadermostafa12@gmail.com",
+                            Password = "12345678"
+                        });
                 });
 
             modelBuilder.Entity("Booking.Models.Reservation", b =>
                 {
                     b.HasOne("Booking.Models.Trip", "Trip")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Booking.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -120,6 +160,16 @@ namespace Booking.DataAccess.Migrations
                     b.Navigation("Trip");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Booking.Models.Trip", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("Booking.Models.User", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

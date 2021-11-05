@@ -31,11 +31,13 @@ namespace Booking.DataAccess.Migrations
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
@@ -90,7 +92,7 @@ namespace Booking.DataAccess.Migrations
                             Id = 1,
                             CityName = "Cairo",
                             Content = "<div><h1>This Is Trip Journy To Cairo Content</h1></div>",
-                            CreationDate = new DateTime(2021, 11, 1, 9, 59, 40, 985, DateTimeKind.Local).AddTicks(6817),
+                            CreationDate = new DateTime(2021, 11, 4, 23, 38, 1, 210, DateTimeKind.Local).AddTicks(1076),
                             ImageUrl = "/images/img1.jpg",
                             Name = "Journy To Cairo",
                             Price = 5000m
@@ -100,7 +102,7 @@ namespace Booking.DataAccess.Migrations
                             Id = 2,
                             CityName = "Luxor",
                             Content = "<div><h1>This Is Trip Journy To Luxor Content</h1></div>",
-                            CreationDate = new DateTime(2021, 11, 1, 9, 59, 40, 986, DateTimeKind.Local).AddTicks(8931),
+                            CreationDate = new DateTime(2021, 11, 4, 23, 38, 1, 210, DateTimeKind.Local).AddTicks(8519),
                             ImageUrl = "/images/img2.jpg",
                             Name = "Journy To Luxor",
                             Price = 10000m
@@ -115,7 +117,9 @@ namespace Booking.DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
@@ -142,13 +146,13 @@ namespace Booking.DataAccess.Migrations
             modelBuilder.Entity("Booking.Models.Reservation", b =>
                 {
                     b.HasOne("Booking.Models.Trip", "Trip")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Booking.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -156,6 +160,16 @@ namespace Booking.DataAccess.Migrations
                     b.Navigation("Trip");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Booking.Models.Trip", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("Booking.Models.User", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }
