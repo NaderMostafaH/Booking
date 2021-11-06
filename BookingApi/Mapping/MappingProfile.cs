@@ -20,6 +20,7 @@ namespace BookingApi.Mapping
             CreateMap<Reservation, ReservationListDto>().ReverseMap();
             CreateMap<Reservation, ReservationDetailsDto>().ReverseMap();
             CreateMap<Reservation, ReservationForUserDto>().ReverseMap();
+            CreateMap<Reservation, ReservationDto>().ReverseMap();
         }
     }
 }

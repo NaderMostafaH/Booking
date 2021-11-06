@@ -17,7 +17,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace BookingApi
@@ -44,7 +46,27 @@ namespace BookingApi
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BookingApi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                { 
+                    Title = "BookingApi",
+                    Version = "v1",
+                    Description = "Simple Api For Booking System",
+                    Contact = new OpenApiContact
+                    {
+                        Email = "nadermostafa11@gmail.com",
+                        Name = "Nader Mostafa",
+                        Url = new Uri("https://www.facebook.com/nader.mido0")
+                    },
+                    License = new OpenApiLicense
+                    {
+                         Name = "Free License",
+                         Url = new Uri("https://www.facebook.com/nader.mido0")
+                    },
+                    TermsOfService = new Uri("https://www.facebook.com/nader.mido0")
+                });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -58,12 +80,21 @@ namespace BookingApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookingApi v1"));
+                app.UseSwagger(c => 
+                {
+                    c.SerializeAsV2 = true;
+                });
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookingApi v1");
+                     c.InjectStylesheet("/swagger-ui/custom.css");
+                }
+                 
+                );
             }
 
             app.UseHttpsRedirection();
-           
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthorization();
