@@ -176,6 +176,11 @@ namespace BookingApi.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                
                 if (reservationDto == null)
                     return BadRequest();
 

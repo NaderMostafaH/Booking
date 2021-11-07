@@ -2,6 +2,7 @@ using Booking.DataAccess.Data;
 using Booking.DataAccess.Repository;
 using Booking.DataAccess.Repository.IRepository;
 using Booking.Models;
+using Booking.Models.Dtos;
 using Booking.Models.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -70,7 +71,7 @@ namespace BookingApi
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddTransient<IValidator<Reservation>, ReservationsValidators>();
+            services.AddTransient<IValidator<ReservationDto>, ReservationDtoValidators>();
             services.AddAutoMapper(typeof(Startup));
         }
 
